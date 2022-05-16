@@ -9,8 +9,12 @@ Games like Overwatch (or League of Legends) have teams of people where each team
 
 In CS:GO anyone can purchase smokes (smoke bombs) or flashes (flash grenades) to help the team get in better positions and hide some of your movements. However, in Valorant, those plus many other abilities are tied to a specific agent, and this makes the roles on each team more clear for the players, specifically new users.
 
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 ## Major problem in Valorant?
 Valorant, like any other online game, has a cheating and smurfing problem. Cheating is when you utilized external software to help you perform better than you are, so you can achieve a better rank. Smurfing is essentially the opposite problem, you create new accounts and purposely play badly to have your rank set to a much lower level than the ability you can actually play at. You'd then play on teams and against teams with people much worse than you and effectively dominate every single game you play. Both of these can ruin the game for players who are trying to play fairly, and Valorant has anti-cheat software to help deal with the cheating problem.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ## Can we do something about the smurfing problem?
 This was my main question I wanted to answer. I wanted to do this by creating a model of accounts statistics (kill/death ratio, assists, headshot percentage, and ability usage) versus the rank and position you play on the team.
