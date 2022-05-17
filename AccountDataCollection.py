@@ -41,7 +41,7 @@ def character_to_position(character):
     
     return char_pos_dict[character]
 
-
+"""
 ###########################################################################
 def calc_position(position_dict):
     '''Finds the average agent class/team position of an account'''
@@ -51,7 +51,7 @@ def calc_position(position_dict):
  
     ## if no obvious agent class, return Flex
     return 'Flex'
-
+"""
 
 ###########################################################################
 def find_team_position(user_characters):
@@ -68,11 +68,19 @@ def find_team_position(user_characters):
     for character in user_characters:
         position = character_to_position(character)
         
-        ## Checks to make sure agent data was properly collected
+        ## checks to make sure agent data was properly collected
         if not (position == None):
             position_count[position] = position_count.get(position) + 1
     
-    return calc_position(position_count)
+    ## finds dictionary keys with max value
+    max_position = max(position_count.values());  
+    positions = [key for key, value in position_count.items() if value == max_position]
+    
+    ## if two positions have max value, return Flex
+    if len(positions) > 1:
+        return 'Flex'
+    
+    return positions[0]
 
 
 ###########################################################################

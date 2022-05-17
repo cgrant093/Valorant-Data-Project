@@ -10,6 +10,7 @@ from MatchAndRankRequest import get_matches_and_rank
 from AccountDataCollection import average_stats
 
 
+###########################################################################
 def get_new_users(match):
     '''finds new users from a given match'''
     
@@ -27,6 +28,7 @@ def get_new_users(match):
 
 
 
+###########################################################################
 def find_more_users(account, current_set, depth):
     '''Recursiver method:
         Acquires data for a given account
