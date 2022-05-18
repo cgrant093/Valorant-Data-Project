@@ -56,3 +56,50 @@ def get_ranked_pos_df(df):
     }
     
     return position_dict
+    
+    
+###########################################################################
+def separate_df_by_rank(df):
+    '''Creates separate dfs for each rank.
+        For the purpose of finding and removing statistical outliners'''
+    
+    rank_dict = {rank : df.loc[(df['Rank'] == rank)] for rank in rank_order()}
+    
+    return rank_dict
+    
+    
+###########################################################################
+def combined_rank_df(rank_dict):
+    '''Combines the separate rank dfs into one'''
+    
+    df = pd.DataFrame(columns=rank_dict['Radiant'].columns)
+    
+    for rank in rank_order():
+        df = pd.concat([df, rank_dict[rank]])
+    
+    return df
+    
+    
+###########################################################################   
+def not_outliers_IQR(df):
+    '''a function to find outliers using IQR
+        and return the ones that are not outliers'''
+    
+    Q1 = df.quantile(0.25)
+    Q3 = df.quantile(0.75)
+    IQR = Q3 - Q1
+    
+    not_outliers = df[~((df.lt(Q1 - 1.5 * IQR)) | (df.gt(Q3 + 1.5 * IQR))).any(axis=1)]
+    
+    return not_outliers
+    
+    
+###########################################################################
+def remove_stat_outliers(df):
+    '''removes statistical outliers from each rank'''
+    
+    rank_dict = separate_df_by_rank(df)
+    
+    no_outliers_dict = {rank: not_outliers_IQR(rank_dict[rank]) for rank in rank_dict}
+    
+    return combined_rank_df(no_outliers_dict)
