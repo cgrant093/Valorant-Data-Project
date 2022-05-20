@@ -53,7 +53,9 @@ With the help of and [API](https://github.com/Henrik-3/unofficial-valorant-api) 
 
 In the future, I may just run it every 2 weeks or so, I should have slightly different lists of about 7000 every time I run the program. The program wouldn't have to run for a long time or a larger max depth, but the tradeoff is it would take many weeks to acquire a decent set of accounts.
 
-The current distribution of players I have is:
+The current distribution of players I have is found below. I apologize to anyone that has darkmode enabled on github as they cannot see the axes labels, but all graphs can be found in the files above.
+
+![my rank distribution](https://user-images.githubusercontent.com/26928139/169598119-c7c0efb4-5cab-47b0-9e42-e7bea162cafa.png)
 
 Which is fairly different from the distribution found on [tracker.gg](https://tracker.gg/valorant/leaderboards/ranked/all/default?page=1), I specifically need more low and mid ranked accounts to compensate for this.
 
@@ -68,11 +70,26 @@ The second is outlier accounts (for a given rank). These accounts are likely smu
 
 From here I actually found some interesting results. Firstly, the statistics I saved were kill/death ratio (KD), number of assists, headshot percentage, and number of times an ability was used. These were all averaged to one match. I found that KD and assists leveled out pretty quickly in the mid tiers. However, headshot percentage and ability usage roughly linearly increased given the players rank:
 
+![KD_rank](https://user-images.githubusercontent.com/26928139/169598364-f394a477-fbe5-47da-8ac3-84e0b677508d.png) 
+![Assists_rank](https://user-images.githubusercontent.com/26928139/169598400-e812d8d9-cee8-4491-a6da-d5911516392f.png)
+![Headshot %_rank](https://user-images.githubusercontent.com/26928139/169598436-2ca2f068-6358-4fb9-bf30-f55dcab22a5b.png) 
+![Ability Usage_rank](https://user-images.githubusercontent.com/26928139/169598458-2e850a1d-3cfe-4ffc-b251-25febe67e4b4.png)
 
 I also wanted to track these stats based on the position someone plays, which is mostly dependent on the class of agent they play. A player can pick characters (agents) from four classes: duelist, initiator, sentinel, and controller. Each class has a different set of responsibilies they are supposed to preform during a game. However, at lower ranks, these system isn't followed very much. The fifth group below is labeled as a 'flex' player, which is someone that doesn't consistently play a character from one of the four groups listed above. I found that the graphs which are just based off rank do not change much when considering character type:
 
+![KD_rank_pos](https://user-images.githubusercontent.com/26928139/169598557-4920b34e-5758-4a98-b9ed-c9f2b9061fb4.png)
+![Assists_rank_pos](https://user-images.githubusercontent.com/26928139/169598565-bdc553fb-2270-47a0-a742-406c5cd58974.png)
+![Headshot %_rank_pos](https://user-images.githubusercontent.com/26928139/169598577-1490236a-5ab3-4f98-af5a-54a10efed920.png)
+![Ability Usage_rank_pos](https://user-images.githubusercontent.com/26928139/169598584-fffc6484-bed8-4b9d-b8ca-239fb67ac742.png)
 
-The only graph that changes considerably is assists per game. However, Valorant calculates assists in a very strange way, and you can get 'non-damaging' assists in a lot of different ways, and Riot is not totally transparent on their in game algorithms for specific calculations.
+
+The only graph that changes considerably is assists per game. However, Valorant calculates assists in a very strange way, and you can get 'non-damaging' assists in a lot of different ways, and Riot is not totally transparent on their in game algorithms for specific calculations. 
+
+I think when I create the tests/model, I need:
+- heavier emphasis on headshot percentage and ability usage, 
+- much less importance on KD, and 
+- almost ignore assists. 
+- It also seems that I do not need to take character type into account
 
 
 
