@@ -1,5 +1,5 @@
 # What is Valorant?
-Valorant is a 5v5 first-person tactile shooter game owned by Riot. The players choose different characters (agents) with unique abilities. 
+Valorant is a 5v5 character-based tactical FPS where precise gunplay meets unique agent abilities. 
 
 Normal tactile shooters incorporate the importance of:
 1. aiming precisely and accurately at enemy teammates with emphasis on headshots
@@ -15,22 +15,22 @@ Valorant is special because it adds characters with unique abilites. Games that 
 3. the 'ultimate' (ult) economy, the ult being a special ability you acquire through playing some number of rounds. 
    - Teams can have completely different strategies depending on the ults available.
 
-Combining both means there's many different player stats to look at, and the game can be rather strategically complex.
+Combining both means there's many different player stats to look at, and a game can be strategically complex.
 
 
 ## Valorant has a 'smurfing' problem
-Valorant, like any other online game, has a smurfing problem. Cheating is when a player utilizes external software to help them at a higher ability for the sake of rank/glory. Smurfing is essentially the opposite problem, a player create new accounts for the sole purpose of playing people signifcantly worse than them. This can ruin the game for the rest of the players who are trying to play fairly. Valorants anti-cheat software improve over time, but this cannot detect smurfs.
+Valorant, like any other online game, has a smurfing problem. Cheating is when a player utilizes external software to help them at a higher ability for the sake of rank/glory. Smurfing is essentially the opposite problem, a player create new accounts for the sole purpose of playing people signifcantly worse than them. This can ruin the game for the rest of the players who are trying to play fairly. Valorants anti-cheat software will improve over time, but it has no ability to detect smurfs.
 
 
 
 ## Can we do something about the smurfing problem?
 There are many statistics in the game. The better players are better for some reason. The reason better players are better could be a whole list of things:
-- better at shooting 
-- kill more and die less
-- acquire more team assists
-- use their abilities more often or more effectively
+- more accurate at shooting 
+- kill opponents more often and die fewer times in a game
+- assists teammates more frequenty 
+- use their abilities more effectively
 - etc. 
-I wanted to see if I can see what makes a better player better, and then whether the statistics are accurate enough to differentiate a persons rank based on their stats. I will also take into account the character someone normally plays to see if this changes anything. I want to create a model that predict a player's rank (with some confidence level) based off their stats in the game.
+I wanted to see how these can be translated into in-game statistics and how much better a higher ranked player is at each. Then are the differences statistically significan to distinguish player ranks. I will also take into account the type of character someone normally plays to see if this changes the statistics. I want to create a model that predict a player's rank (with some confidence level) based on their in-game statistics.
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -49,24 +49,18 @@ graph LR
 ```
 
 ## 1. Acquire a large list of accounts statistics
-With the help of and [API](https://github.com/Henrik-3/unofficial-valorant-api) by Henrik-3, I have written a recursive program that collects accounts and the certain player statistics with those accounts. A list of accounts does not already exists, so I have to check the last five matches/games of a player, add any enemies/teammates that are already not in my list, and if I haven't reached the max depth yet, run the algorithm on that group of people. With a max depth of 2, I have acquired ~7000 accounts with statistics. If I were to go any deeper, it would take my computer an extremely long time, so I have to think of a better way to do this. 
+With the help of an [API](https://github.com/Henrik-3/unofficial-valorant-api) by Henrik-3, I have written a recursive program that collects accounts from some seeded players. A list of accounts does not already exists, so I have to check the last five matches/games of a player, add any enemies/teammates that are already not in my list, and if I haven't reached the max depth yet, run the algorithm on that group of people. I have acquired over 250,000 accounts. Afterwards, I collect player statistics for each account in that list. Some accounts have no data associated with them for one of several reasons. After cleaning the data, I have about 150,000 accounts left with statistics.
 
-In the future, I may just run it every 2 weeks or so, I should have slightly different lists of about 7000 every time I run the program. The program wouldn't have to run for a long time or a larger max depth, but the tradeoff is it would take many weeks to acquire a decent set of accounts.
-
-The current distribution of players I have is found below. I apologize to anyone that has darkmode enabled on github as they cannot see the axes labels, but all graphs can be found in the files above.
+The current distribution of players I have is found below.
 
 ![my rank distribution](https://user-images.githubusercontent.com/26928139/169598119-c7c0efb4-5cab-47b0-9e42-e7bea162cafa.png)
 
-Which is fairly different from the distribution found on [tracker.gg](https://tracker.gg/valorant/leaderboards/ranked/all/default?page=1), I specifically need more low and mid ranked accounts to compensate for this.
-
+Which is not too different from the distribution found on [tracker.gg](https://tracker.gg/valorant/leaderboards/ranked/all/default?page=1). 
 
 
 ## 2. Clean data and find average stats with uncertainty for each rank
-There are two major things to clean out of the data. 
 
-The first is missing data, so even if I have acquired an account name, sometimes the requests for the account statistics comes back empty. The account is either unranked, or private, or I had an internet loss blimp, or many other things. Luckily, the loss of acounts for this clean up was only ~500. 
-
-The second is outlier accounts (for a given rank). These accounts are likely smurfs, or accounts where the players have recently gotten better, but have not ranked up yet. I want to remove this data as it will skew the average stats per rank.
+After removing the accounts with missing data, I should remove the accounts that are statistical outliers in their given rank. These accounts are potentially smurfs, or accounts where the players have recently gotten better, but have not ranked up yet. I want to remove this data as including them would skew the average stats for each rank.
 
 From here I actually found some interesting results. Firstly, the statistics I saved were kill/death ratio (KD), number of assists, headshot percentage, and number of times an ability was used. These were all averaged to one match. I found that KD and assists leveled out pretty quickly in the mid tiers. However, headshot percentage and ability usage roughly linearly increased given the players rank:
 
@@ -92,9 +86,8 @@ I think when I create the tests/model, I need:
 - It also seems that I do not need to take character type into account
 
 
-
 ## 3. Creating a model to determine if someones stats and rank make up (within some Confidence)
-I am thinking of using a couple t-tests (or z-tests) to compare the alleged smurf accounts average statistics to that of the for their given rank. I am hoping the confidence level will be significant, and it may not be perfect, but I am hoping it gives a good starting spot.
+I am thinking of using a couple t-tests (or z-tests) or create a k nearest neighbor (KNN) model to compare the alleged smurf accounts average statistics to that of the for their given rank. I am hoping the confidence level will be significant, and it may not be perfect, but I am hoping it gives a good starting point.
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
