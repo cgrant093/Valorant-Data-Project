@@ -6,7 +6,8 @@ MatchAndRankRequest calls an API to collect:
 API called: https://github.com/Henrik-3
 '''
 
-from MatchAndRankRequest import get_matches_and_rank
+import pandas as pd
+from MatchAndRankRequest import get_matches, get_rank
 from AccountDataCollection import average_stats
 
 
@@ -29,7 +30,7 @@ def get_new_users(match):
 
 
 ###########################################################################
-def find_more_users(account, current_set, depth):
+def find_more_users(account, curr_set, df, depth):
     '''Recursiver method:
         Acquires data for a given account
             Data: info from last five matches and account rank
@@ -40,34 +41,80 @@ def find_more_users(account, current_set, depth):
             Use match data to find more account
             Then run this method again on those accounts'''
     
-    
     ## see if account exists in set
-    if account in current_set:
-        return set()
+    if account in curr_set:
+        return set(), pd.DataFrame()
     
+    rank = get_rank(account[0], account[1])
+    
+    if rank == None:
+        return set(), pd.DataFrame()
     
     ## generate last 5 matches 
         ## and if no matches available return nothing
-    matches, rank = get_matches_and_rank(account[0], account[1])
+    matches = get_matches(account[0], account[1])  
     
-    if (matches == None) or (rank == None): 
-        return set()
+    if matches == None: 
+        return set(), pd.DataFrame()
     
-    
-    ## acquire important account info from each match 
-        # and average it together
-    account = average_stats(account, matches, rank)
-    
+    for match in matches:
+        match_info = {
+                    'User' : account[0],
+                    'Tag' : account[1],
+                    'Rank' : rank,
+                    'Match' : match
+                    }
+        
+        df = df.append(match_info , ignore_index=True)
     
     ## add account to set
-    current_set.add(account)
+    curr_set.add(account)
     
     
     ## if we have NOT reached max_depth, find more users and add to set
     if depth > 0:
         new_users = set().union(*[get_new_users(match) for match in matches])
         
-        current_set |= set().union(*[find_more_users(user, current_set, depth-1) for user in new_users])
+        new_list, df = [find_more_users(user, curr_set, df, depth-1) for user in new_users]
+
+        curr_set |= set().union(*new_list)
 
     
-    return current_set
+    return curr_set, df
+    
+    
+
+###########################################################################
+def find_user_rank(name, tag):
+
+    ## gets account rank
+    rank = get_rank(name, tag)
+    
+    if rank == None:
+        return None
+    
+    return rank
+
+def find_user_matches(name, tag):
+    ''' '''
+    
+    ## generate last 5 matches 
+        ## and if no matches available return nothing
+    matches = get_matches(name, tag)  
+    
+    if matches == None: 
+        return pd.DataFrame()
+   
+    df = pd.DataFrame(columns = ['User', 'Tag', 'Rank', 'Match'])
+    
+    for match in matches:
+        match_info = {
+                    'User' : name,
+                    'Tag' : tag,
+                    'Rank' : rank,
+                    'Match' : match
+                    }
+        
+        df = df.append(match_info , ignore_index=True)
+    
+    return df
