@@ -45,38 +45,55 @@ I plotted each in-game statistics per rank to find the signficant features. The 
 
 The features I found that can relate mechanical ability and/or game strategy to a persons rank are:
 1. KD Ratio (number of times the player killed someone divided by the number of times they died)
+
 ![KD rank](./plots/KD_rank_black.png#gh-dark-mode-only)
 ![KD_rank](./plots/KD_rank_white.png#gh-light-mode-only)
+
 I found that some other features I chose had nearly the same lineplot as the one above, so I decided to not utilize Average Combat Score (ACS) and Average Damage Given. This makes sense that they are similar as damage can be closely related to kills and kills are the main decider in the hidden algorithm for ACS.
 
+
 2. Headshot Percentage (number of times the players gun bullet hit another's head divided by the number of bullets that hit another player (head, body, legs))
+
 ![HS perc rank](./plots/HS_perc_rank_black.png#gh-dark-mode-only)
 ![HS perc rank](./plots/HS_perc_rank_white.png#gh-light-mode-only)
 
+
 3. Average Ability Usage (players choose character with different ability (or super powers) along side the guns they use in each game)
+
 ![avg Ability Usage_rank](./plots/avg_ability_usage_rank_black.png#gh-dark-mode-only)
 ![avg Ability Usage_rank](./plots/avg_ability_usage_rank_white.png#gh-light-mode-only)
 
+
 4. Average Damage Received (damage the player received from others per round)
+
 ![Avg Dam Rec_rank](./plots/avg_dmg_rec_rank_black.png#gh-dark-mode-only)
 ![Avg Dam Rec_rank](./plots/avg_dmg_rec_rank_white.png#gh-light-mode-only)
 
+
 5. Average spent (guns and abilities cost money which you earn during rounds by doing various things)
+
 ![Avg econ spent](./plots/avg_spent_rank_black.png#gh-dark-mode-only)
 ![Avg econ spent](./plots/avg_spent_rank_white.png#gh-light-mode-only)
 
+
 6. Average loadout (you can keep a gun from a previous round by not dying, and this gun doesn't cost you money this round by still contribute to your average loadout)
+
 ![Avg econ loadout](./plots/avg_loadout_rank_black.png#gh-dark-mode-only)
 ![Avg econ loadout](./plots/avg_loadout_rank_white.png#gh-light-mode-only)
 
+
 7. Account level (this is leveled up by playing games, you can be someone with a high account level because you play a lot, but that doesn't necessarily mean you'll get better at the game). Although, the graph shows that it's roughly exponential.
+
 ![Account level](./plots/level_rank_black.png#gh-dark-mode-only)
 ![Account level](./plots/level_rank_white.png#gh-light-mode-only)
 
+
 8. Lastly, there is Average Assists (this is for if you've helped kill an enemy player in some way, but didn't give the killing blow). I'm not sure this feature is useful due to it leveling out relatively quickly.
+
 ![Avg assists](./plots/avg_assists_rank_black.png#gh-dark-mode-only)
 ![Avg assists](./plots/avg_assists_rank_white.png#gh-light-mode-only)
 
+ 
  
 Also, in terms of rank, a player can also have a particular 'position' on the team. When choosing a character, they have different abilities (or super powers) and these abilities have different uses. Valorant has divided up the characters into four main groups depending on their set of abilities. 
 
@@ -111,7 +128,7 @@ All .py files are essentially libraries/method holders so the Jupyter notebooks 
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-# Potential future adjustments
+# Potential Future Adjustments
 1. The way I collected new accounts separately from match data wasted lots of time as they were the same API request. In the future, I would implement this at the same time and maybe have a second dictionary where the keys are accounts and the values are a boolean telling me if their account was already accessed for this step of the API. Should save lots of time if I ever implement it for the other regions of the game (currently only have NA players).
 
 2. Of course the model creation described in two sections up. Whether it one or several machine learning models or statistical tests, this still needs to be researched and implemented.
