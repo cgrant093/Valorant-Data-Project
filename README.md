@@ -1,92 +1,94 @@
+Firstly, I would like to say that this is a work in progress. Currently, I was refactoring my code and rewriting the files to match the PEP8 documentation. More detailed progress updates can be found at the bottom of the readme.
+
+
 # What is Valorant?
-Valorant is a 5v5 character-based tactical FPS where precise gunplay meets unique agent abilities. 
+Valorant is an online game where two teams (each with 5 players) compete to be the first team to win 13 rounds in a game. An individual player can be better at the game in one of two generic ways: 
 
-Normal tactile shooters incorporate the importance of:
-1. aiming precisely and accurately at enemy teammates with emphasis on headshots
-2. team strategy to either plant or defuse the bomb (spike)
-3. team synergy to either kill someone together or trade off kills, or use your numbers advantage later in the round
-4. the economy of each team to figure out what kind of guns they can buy for a given round. 
-   - Teams usually have different strategies based on the guns they have vs what their opponents have.
-
-Valorant is special because it adds characters with unique abilites. Games that do this usually have imporance on:
-1. different ability combinations between teammates
-2. different characters having different abilities have different roles on the team:
-   - who entires, who assists with that, who smokes off points, who flanks, etc.
-3. the 'ultimate' (ult) economy, the ult being a special ability you acquire through playing some number of rounds. 
-   - Teams can have completely different strategies depending on the ults available.
-
-Combining both means there's many different player stats to look at, and a game can be strategically complex.
+1. they have more mechanical ability (equates to pressing buttons faster and moving their mouse more precisely) 
+2. they have a smarter game strategy, which can make up for mechanical ability by outplaying the players on the opposite team
 
 
 ## Valorant has a 'smurfing' problem
-Valorant, like any other online game, has a smurfing problem. Cheating is when a player utilizes external software to help them at a higher ability for the sake of rank/glory. Smurfing is essentially the opposite problem, a player create new accounts for the sole purpose of playing people signifcantly worse than them. This can ruin the game for the rest of the players who are trying to play fairly. Valorants anti-cheat software will improve over time, but it has no ability to detect smurfs.
+Valorant, like any other online game, has a smurfing problem. This is when a player creates new accounts to play with people signifcantly worse than them (with regards to mechanical ability and/or game strategy). This is a problem because Valorant has a built in match making system that is supposed to queue you with players of the same skill level via some hidden algorithm. This problem makes the game not fun to play for the lower skilled players because the game feels unfair.
 
 
 ## Can we do something about the smurfing problem?
-There are many statistics in the game. The better players are better for some reason. The reason better players are better could be a whole list of things:
-- more accurate at shooting 
-- kill opponents more often and die fewer times in a game
-- assists teammates more frequenty 
-- use their abilities more effectively
-- etc. 
-I wanted to see how these can be translated into in-game statistics and how much better a higher ranked player is at each. Then are the differences statistically significan to distinguish player ranks. I will also take into account the type of character someone normally plays to see if this changes the statistics. I want to create a model that predict a player's rank (with some confidence level) based on their in-game statistics.
+Due to the complexity of the game, there are many in-game statistics that can relate to a person's mechanical ability, and some that can imply their game strategy. I want to see how these statistics change based on the given rank a player is. Rank is set by a different hidden algorithm in Valorant, the higher your rank, the better player Valorant thinks you are. Perhaps we can reverse engineer the aspects of the algorithm that are important to rank and be able to catch a player's true rank before their new account catches up to their skill level.
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Current Progress
 
-```mermaid
-graph LR
-    A(Initial account data) --> B((Enough Data?))
-    B -->|No| C(Collect more data)
-    C --> B
-    B -->|Maybe?| D(Clean up data)
-    D --> E(Stat tests model)
-    style B fill:#888
-    style C fill:#ffc
-    style E fill:#fcc
-```
+## A. Acquire a large list of accounts and account statistics
+Aside from leaderboards found on websites, like [tracker.gg](https://tracker.gg/valorant/leaderboards/ranked/all/default?page=1), there is no player list in Valorant. The leaderboard found on [tracker.gg](https://tracker.gg/valorant/leaderboards/ranked/all/default?page=1) only has the top 1000 accounts or so in any given region. This of course would be a biased dataset if I only used these accounts as it would only give me statistics about the upper ranks. With the help of an [API](https://github.com/Henrik-3/unofficial-valorant-api) by Henrik-3, I wrote a recursive program that collects accounts from small list of players. It would look at their past few games played and collect all the accounts they played with. These accounts would be added to a set, and I did this until I had 10s of thousands, if not 100s of thousands, of accounts. 
 
-## 1. Acquire a large list of accounts and account statistics
-With the help of an [API](https://github.com/Henrik-3/unofficial-valorant-api) by Henrik-3, I have written a recursive program that collects accounts from some seeded players. A list of accounts does not already exists, so I have to check the last five matches/games of a player, add any enemies/teammates that are already not in my list, and if I haven't reached the max depth yet, run the algorithm on that group of people. I have acquired over 250,000 accounts. Afterwards, I collect player statistics for each account in that list. Some accounts have no data associated with them for one of several reasons. After cleaning the data, I have about 150,000 accounts left with statistics.
-
-The current distribution of players I have is found below.
-
-![my rank distribution](https://user-images.githubusercontent.com/26928139/169598119-c7c0efb4-5cab-47b0-9e42-e7bea162cafa.png)
-
-Which is not too different from the distribution found on [tracker.gg](https://tracker.gg/valorant/leaderboards/ranked/all/default?page=1). 
+Afterwards, I sent another [API](https://github.com/Henrik-3/unofficial-valorant-api) to the whole list of accounts and found all relevant data for their last couple of matches. If I were to do this again, I would probably do them in the same step, and/or add the accounts as keys to a dictionary where the value is a boolean that tells me if their account statistics has been added to the pandas dataframe yet.
 
 
-## 2. Clean data, separate by rank, remove statistical outliers, and find the the average statistics per rank
+## B. Cleaning the data
 
-After removing the accounts with missing data, I should remove the accounts that are statistical outliers in their given rank. These accounts are potentially smurfs, or accounts where the players have recently gotten better, but have not ranked up yet. I want to remove this data as including them would skew the average stats for each rank.
+The data needs to be cleaned. The first thing that needs to be done is a restructuring of data. For the API requests to run as fast as possible, I collected all game data for X number of games from a player and moved on. However, there is a lot of game data that I didn't think was necessary for my project. So this column in the dataframe was 'exploded' to multiple rows for users with multiple games saved, and expanded to multiple columns for the in-game statistics that I thought necessary for the project. 
 
-From here I actually found some interesting results. Firstly, the statistics I saved were kill/death ratio (KD), number of assists, headshot percentage, and number of times an ability was used. These were all averaged to one match. I found that KD and assists leveled out pretty quickly in the mid tiers. However, headshot percentage and ability usage roughly linearly increased given the players rank:
+I also removed the accounts with missing data and removed the statistical outliers from the data. Whether someone was a statistical outlier depended on their in-game rank, and I did this to remove the people who are perhaps smurfing, cheating, or hadn't played the game in a while as to not skew the data in either direction.
 
-![KD_rank](https://user-images.githubusercontent.com/26928139/169598364-f394a477-fbe5-47da-8ac3-84e0b677508d.png) 
-![Assists_rank](https://user-images.githubusercontent.com/26928139/169598400-e812d8d9-cee8-4491-a6da-d5911516392f.png)
-![Headshot %_rank](https://user-images.githubusercontent.com/26928139/169598436-2ca2f068-6358-4fb9-bf30-f55dcab22a5b.png) 
-![Ability Usage_rank](https://user-images.githubusercontent.com/26928139/169598458-2e850a1d-3cfe-4ffc-b251-25febe67e4b4.png)
+After cleaning the data, I was left with this distribution of account ranks:
 
-I also wanted to track these stats based on the position someone plays, which is mostly dependent on the class of agent they play. A player can pick characters (agents) from four classes: duelist, initiator, sentinel, and controller. Each class has a different set of responsibilies they are supposed to preform during a game. However, at lower ranks, these system isn't followed very much. The fifth group below is labeled as a 'flex' player, which is someone that doesn't consistently play a character from one of the four groups listed above. I found that the graphs which are just based off rank do not change much when considering character type:
+![my rank distribution](./plots/clean_dist_black.png#gh-dark-mode-only)
+![my rank distribution](./plots/clean_dist_white.png#gh-light-mode-only)
 
-![KD_rank_pos](https://user-images.githubusercontent.com/26928139/169598557-4920b34e-5758-4a98-b9ed-c9f2b9061fb4.png)
-![Assists_rank_pos](https://user-images.githubusercontent.com/26928139/169598565-bdc553fb-2270-47a0-a742-406c5cd58974.png)
-![Headshot %_rank_pos](https://user-images.githubusercontent.com/26928139/169598577-1490236a-5ab3-4f98-af5a-54a10efed920.png)
-![Ability Usage_rank_pos](https://user-images.githubusercontent.com/26928139/169598584-fffc6484-bed8-4b9d-b8ca-239fb67ac742.png)
+Which is very similar to the bar chart found on [tracker.gg](https://tracker.gg/valorant/leaderboards/ranked/all/default?page=1). Although, I have not written a statistical test to check how similar the two distributions are, and will do that in the future.
 
 
-The only graph that changes considerably is assists per game. However, Valorant calculates assists in a very strange way, and you can get 'non-damaging' assists in a lot of different ways, and Riot is not totally transparent on their in game algorithms for specific calculations. 
+## C. Finding the significant features
 
-I think when I create the tests/model, I need:
-- heavier emphasis on headshot percentage and ability usage, 
-- much less importance on KD, and 
-- almost ignore assists. 
-- It also seems that I do not need to take character type into account
+I plotted each in-game statistics per rank to find the signficant features. The features labels are in video game jargon and there isn't much I can do about that. Labeling the features without video game jargon would make the project more confusing in the code and to the people that understand valorant.
+
+The features I found that can relate mechanical ability and/or game strategy to a persons rank are:
+1. KD Ratio (number of times the player killed someone divided by the number of times they died)
+![KD rank](./plots/KD_rank_black.png#gh-dark-mode-only)
+![KD_rank](./plots/KD_rank_white.png#gh-light-mode-only)
+I found that some other features I chose had nearly the same lineplot as the one above, so I decided to not utilize Average Combat Score (ACS) and Average Damage Given. This makes sense that they are similar as damage can be closely related to kills and kills are the main decider in the hidden algorithm for ACS.
+
+2. Headshot Percentage (number of times the players gun bullet hit another's head divided by the number of bullets that hit another player (head, body, legs))
+![HS perc rank](./plots/HS_perc_rank_black.png#gh-dark-mode-only)
+![HS perc rank](./plots/HS_perc_rank_white.png#gh-light-mode-only)
+
+3. Average Ability Usage (players choose character with different ability (or super powers) along side the guns they use in each game)
+![avg Ability Usage_rank](./plots/avg_ability_usage_rank_black.png#gh-dark-mode-only)
+![avg Ability Usage_rank](./plots/avg_ability_usage_rank_white.png#gh-light-mode-only)
+
+4. Average Damage Received (damage the player received from others per round)
+![Avg Dam Rec_rank](./plots/avg_dmg_rec_rank_black.png#gh-dark-mode-only)
+![Avg Dam Rec_rank](./plots/avg_dmg_rec_rank_white.png#gh-light-mode-only)
+
+5. Average spent (guns and abilities cost money which you earn during rounds by doing various things)
+![Avg econ spent](./plots/avg_spent_rank_black.png#gh-dark-mode-only)
+![Avg econ spent](./plots/avg_spent_rank_white.png#gh-light-mode-only)
+
+6. Average loadout (you can keep a gun from a previous round by not dying, and this gun doesn't cost you money this round by still contribute to your average loadout)
+![Avg econ loadout](./plots/avg_loadout_rank_black.png#gh-dark-mode-only)
+![Avg econ loadout](./plots/avg_loadout_rank_white.png#gh-light-mode-only)
+
+7. Account level (this is leveled up by playing games, you can be someone with a high account level because you play a lot, but that doesn't necessarily mean you'll get better at the game). Although, the graph shows that it's roughly exponential.
+![Account level](./plots/level_rank_black.png#gh-dark-mode-only)
+![Account level](./plots/level_rank_white.png#gh-light-mode-only)
+
+8. Lastly, there is Average Assists (this is for if you've helped kill an enemy player in some way, but didn't give the killing blow). I'm not sure this feature is useful due to it leveling out relatively quickly.
+![Avg assists](./plots/avg_assists_rank_black.png#gh-dark-mode-only)
+![Avg assists](./plots/avg_assists_rank_white.png#gh-light-mode-only)
+
+ 
+Also, in terms of rank, a player can also have a particular 'position' on the team. When choosing a character, they have different abilities (or super powers) and these abilities have different uses. Valorant has divided up the characters into four main groups depending on their set of abilities. 
+
+I also wanted to look at the statistics based on rank and position. However, I found that other than the Average Assists plot, the plots for each stat based position (and rank) largely follow the same curve as the one only based on rank, and different characters a player chooses seems to have negligable outcomes on their rank.
 
 
-## 3. Creating a model to determine if someones stats and rank make up (within some Confidence)
-I am thinking of using a couple t-tests (or z-tests) or create a k nearest neighbor (KNN) model to compare the alleged smurf accounts average statistics to that of the for their given rank. I am hoping the confidence level will be significant, and it may not be perfect, but I am hoping it gives a good starting point.
+
+
+## D. Future update: Creating a model to determine if someones stats and rank make up 
+This is a future feature at the moment, but I am thinking of using a k nearest neighbor (KNN) model generated in PyTorch or with scikit-learn. I am also mulling over the idea of using a couple machine learning models and statistical tests to see if they all stat the same thing.
+
+Afterwards, I should be able to run the model with a specific player account. If that account has a rank, it should tell me if it believes they should be that rank and if not, what rank they should be with some confidence level. If it doesn't have a rank, it should be able to just execute the second part.
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -99,19 +101,25 @@ All .py files are essentially libraries/method holders so the Jupyter notebooks 
 | ----------------------------- 	| -------------:|
 | initial_data_scrap            	| Jupyter notebook that collects the account data from the different seeded accounts, exports to CSVs, merges all CSVs, and plots distribution of ranks | 
 | feature_study  			| Jupyter notebook that removes data with missing information, removes statistical outliers from each rank by calling ManipDFStats.py, and plots average account stats vs rank (and position) | 
-| FindMoreUsers.py              	| main recursive function that calls MatchAndRankRequest.py to acquire account information and then adds new accounts to the set | 
 | api_requests.py          		| functions that call the [API](https://github.com/Henrik-3/unofficial-valorant-api) to request account data | 
 | combine_and_expand_match_data.py      | expands the match data dictionary column into multiple rows and columns |
 | composite_stats.py			| calculates all composite and averaged stats for each row | 
 | graphs.py				| customizes and plots all the graphs |
 | rank_and_position_dfs.py		| separates dataframe into individual ones based on rank (and position) | 
 | remove_statistical_outliers.py	| removes statistical outlier rows from dataframe per player rank | 
+| FindMoreUsers.py              	| main recursive function that calls to collect more accounts. This file is the next to be reworked which is why the naming convention is different | 
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-# Potential issues/future adjustments
-1. Due to the API, I can only acquire the last 5 games for each account, which means their average statistics could be highly violatile. This could only be compensated for by saving everyone's information and updating it over time. I am not sure I have the space for this, and this would only work if I initially had a large number of user accounts that I didn't ever have to add to, those accounts consistantly played the game for years. However, if my 'seed' accounts continue to play, then getting a new set of 7000 accounts every couple weeks will hopefully keep all the average rank statistics pretty fair with the population that plays the game.
+# Potential future adjustments
+1. The way I collected new accounts separately from match data wasted lots of time as they were the same API request. In the future, I would implement this at the same time and maybe have a second dictionary where the keys are accounts and the values are a boolean telling me if their account was already accessed for this step of the API. Should save lots of time if I ever implement it for the other regions of the game (currently only have NA players).
 
-2. Currently, I only am including North American (NA) players. Different regions do not play with one another, and all my seed accounts are NA, and to find info for all the other accounts would take much longer as there's like 7-10 regions for Valorant.
+2. Of course the model creation described in two sections up. Whether it one or several machine learning models or statistical tests, this still needs to be researched and implemented.
+
+3. I recently learned about unit testing and test driven development, if I were to start again, I would do this. However, since it is already this far along, I may implement them at a later date.
+
+4. The Seaborn package seems to have easier options when it comes to graphing data from a pandas dataframe. I may rework the graphs, but next time I would definitely use them in conjunction with matplotlib.
+
+5. Of course this code isn't completely up to date with PEP8 standards, so I will continue to work on that.
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------
