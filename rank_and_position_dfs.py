@@ -1,17 +1,4 @@
-
-
-
-rank_order = [
-    'Iron 1', 'Iron 2', 'Iron 3', 
-    'Bronze 1', 'Bronze 2', 'Bronze 3',
-    'Silver 1', 'Silver 2', 'Silver 3',
-    'Gold 1', 'Gold 2', 'Gold 3',
-    'Platinum 1', 'Platinum 2', 'Platinum 3',
-    'Diamond 1', 'Diamond 2', 'Diamond 3',
-    'Ascendant 1', 'Ascendant 2', 'Ascendant 3',
-    'Immortal 1', 'Immortal 2', 'Immortal 3',
-    'Radiant'
-]
+from graphs import rank_order
 
 
 def get_ranked_df(df):
@@ -20,9 +7,9 @@ def get_ranked_df(df):
         It orders it by a specific rank order'''
     
     ranked_df_dict = {
-        'mean' : df.groupby(['Rank']).mean().reindex(rank_order),
-        'std' : df.groupby(['Rank']).std().reindex(rank_order),
-        'sem' : df.groupby(['Rank']).sem().reindex(rank_order)
+        'mean' : df.groupby(['Rank']).mean().reindex(rank_order()),
+        'std' : df.groupby(['Rank']).std().reindex(rank_order()),
+        'sem' : df.groupby(['Rank']).sem().reindex(rank_order())
     }
     
     return ranked_df_dict
@@ -45,8 +32,7 @@ def get_ranked_pos_df(df):
         'Duelist' : position_df(df, 'Duelist'),
         'Initiator' : position_df(df, 'Initiator'),
         'Sentinel' : position_df(df, 'Sentinel'),
-        'Controller' : position_df(df, 'Controller'),
-        'Flex' : position_df(df, 'Flex')
+        'Controller' : position_df(df, 'Controller')
     }
     
     return position_dict

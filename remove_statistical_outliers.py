@@ -7,26 +7,14 @@ Created on Fri Aug  5 15:30:15 2022
 
 
 import pandas as pd
-
-
-rank_order = [
-    'Iron 1', 'Iron 2', 'Iron 3', 
-    'Bronze 1', 'Bronze 2', 'Bronze 3',
-    'Silver 1', 'Silver 2', 'Silver 3',
-    'Gold 1', 'Gold 2', 'Gold 3',
-    'Platinum 1', 'Platinum 2', 'Platinum 3',
-    'Diamond 1', 'Diamond 2', 'Diamond 3',
-    'Ascendant 1', 'Ascendant 2', 'Ascendant 3',
-    'Immortal 1', 'Immortal 2', 'Immortal 3',
-    'Radiant'
-]
+from graphs import rank_order
 
 
 def separate_df_by_rank(df):
     '''Creates separate dfs for each rank.
         For the purpose of finding and removing statistical outliners'''
     
-    rank_dict = {rank : df.loc[(df['Rank'] == rank)] for rank in rank_order}
+    rank_dict = {rank : df.loc[(df['Rank'] == rank)] for rank in rank_order()}
     
     return rank_dict
     
@@ -36,7 +24,7 @@ def combined_rank_df(rank_dict):
     
     df = pd.DataFrame(columns=rank_dict['Radiant'].columns)
     
-    for rank in rank_order:
+    for rank in rank_order():
         df = pd.concat([df, rank_dict[rank]])
     
     return df
