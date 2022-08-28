@@ -97,8 +97,12 @@ I found that some other features I chose had nearly the same lineplot as the one
  
 Also, in terms of rank, a player can also have a particular 'position' on the team. When choosing a character, they have different abilities (or super powers) and these abilities have different uses. Valorant has divided up the characters into four main groups depending on their set of abilities. 
 
-I also wanted to look at the statistics based on rank and position. However, I found that other than the Average Assists plot, the plots for each stat based position (and rank) largely follow the same curve as the one only based on rank, and different characters a player chooses seems to have negligable outcomes on their rank.
+I also wanted to look at the statistics based on rank and position. However, I found that other than the Average Assists plot, the plots for each stat based position (and rank) largely follow the same curve as the one only based on rank, and different characters a player chooses seems to have negligable outcomes on their rank. For instance,
 
+![KD rank pos](./plots/KD_rank_pos_black.png#gh-dark-mode-only) &nbsp; &nbsp; &nbsp; &nbsp; ![HS perc rank pos](./plots/HS_perc_rank_pos_black.png#gh-dark-mode-only)
+![KD_rank pos](./plots/KD_rank_pos_white.png#gh-light-mode-only) &nbsp; &nbsp; &nbsp; &nbsp; ![HS perc rank pos](./plots/HS_perc_rank_pos_white.png#gh-light-mode-only)
+
+We can see for some features, it's closely the same plot, and for others, like headshot percentage is the exact same plot.
 
 
 
