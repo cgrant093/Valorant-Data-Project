@@ -99,17 +99,41 @@ Also, in terms of rank, a player can also have a particular 'position' on the te
 
 I also wanted to look at the statistics based on rank and position. However, I found that other than the Average Assists plot, the plots for each stat based position (and rank) largely follow the same curve as the one only based on rank, and different characters a player chooses seems to have negligable outcomes on their rank. For instance,
 
-![KD rank pos](./plots/KD_rank_pos_black.png#gh-dark-mode-only) &nbsp; &nbsp; &nbsp; &nbsp; ![HS perc rank pos](./plots/HS_perc_rank_pos_black.png#gh-dark-mode-only)
-![KD_rank pos](./plots/KD_rank_pos_white.png#gh-light-mode-only) &nbsp; &nbsp; &nbsp; &nbsp; ![HS perc rank pos](./plots/HS_perc_rank_pos_white.png#gh-light-mode-only)
+![KD rank pos](./plots/KD_rank_pos_black.png#gh-dark-mode-only) ![HS perc rank pos](./plots/HS_perc_rank_pos_black.png#gh-dark-mode-only)
+![KD_rank pos](./plots/KD_rank_pos_white.png#gh-light-mode-only) ![HS perc rank pos](./plots/HS_perc_rank_pos_white.png#gh-light-mode-only)
 
 We can see for some features, it's closely the same plot, and for others, like headshot percentage is the exact same plot.
 
 
 
-## D. Future update: Creating a model to determine if someones stats and rank make up 
-This is a future feature at the moment, but I am thinking of using a k nearest neighbor (KNN) model generated in PyTorch or with scikit-learn. I am also mulling over the idea of using a couple machine learning models and statistical tests to see if they all stat the same thing.
+## D. Preprocess data and creating a classification model
+Preprocessed data:
+    - Normalized the features
+    - Encoded the labels
+    - Split data into 80% training and 20% testing
 
-Afterwards, I should be able to run the model with a specific player account. If that account has a rank, it should tell me if it believes they should be that rank and if not, what rank they should be with some confidence level. If it doesn't have a rank, it should be able to just execute the second part.
+My first attempt at a classification model was the built in KNN from sklearn. I found that it has a very poor accuracy. I tried various neighbor values ranging from 3 to 1001, and the best accuracy found was 11%.
+
+I have come to realize that KNN models are notoriously bad with high dimension problems. I chose to use 8 features (listed above), and initially thought this was an okay number, but perhaps this is too much for a KNN model to handle. I have found three paths to take:
+1. Reduce the numbers of features again. I figured that I can remove the features that have more logrithmic plots (in part C) and keep the ones that are closer to linear or exponential.
+2. Choose a different classification model. With the built in sklearn models, this should be easy to change the classification algorithm. I can also try implementing a deep neural network to perform supervised classification, and maybe move to PyTorch and away from sklearn.
+3. Perhaps splitting off a validation data set and improve my very simple training algorithm with that with methods like early stopping, etc.
+
+It could be that my data isn't diverse enough to accurately divide into the 25 labels. Perhaps I can even try implementing into the cost function that if the guess is within +/- 2-3 ranks of the true rank, it also counts? 
+
+
+
+
+## E: Predicting an account's rank
+This will have 2 steps:
+1a. If someone does not have a rank, then send them to step 2.
+1b. If someone does have a rank, use a t-test/ANOVA to confirm they are in the correct rank. If they are not, send them to step 2.
+
+2. Run them through the classification model to determine their rank.
+
+If I cannot find a good classification model, I was thinking I could resort to using a MANOVA test to determine their rank. I may still do that.
+   
+   
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -128,6 +152,7 @@ All .py files are essentially libraries/method holders so the Jupyter notebooks 
 | graphs.py				| customizes and plots all the graphs |
 | rank_and_position_dfs.py		| separates dataframe into individual ones based on rank (and position) | 
 | remove_statistical_outliers.py	| removes statistical outlier rows from dataframe per player rank | 
+| preprocessing.py	| normalizes features, encodes labels, and splits the dataset into multiple parts | 
 | FindMoreUsers.py              	| main recursive function that calls to collect more accounts. This file is the next to be reworked which is why the naming convention is different | 
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------
