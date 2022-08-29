@@ -108,28 +108,26 @@ We can see for some features, it's closely the same plot, and for others, like h
 
 ## D. Preprocess data and creating a classification model
 Preprocessed data:
-    - Normalized the features
-    - Encoded the labels
-    - Split data into 80% training and 20% testing
+1. Normalized the features
+2. Encoded the labels
+3. Split data into 80% training and 20% testing
 
 My first attempt at a classification model was the built in KNN from sklearn. I found that it has a very poor accuracy. I tried various neighbor values ranging from 3 to 1001, and the best accuracy found was 11%.
 
-I have come to realize that KNN models are notoriously bad with high dimension problems. I chose to use 8 features (listed above), and initially thought this was an okay number, but perhaps this is too much for a KNN model to handle. I have found three paths to take:
-1. Reduce the numbers of features again. I figured that I can remove the features that have more logrithmic plots (in part C) and keep the ones that are closer to linear or exponential.
-2. Choose a different classification model. With the built in sklearn models, this should be easy to change the classification algorithm. I can also try implementing a deep neural network to perform supervised classification, and maybe move to PyTorch and away from sklearn.
-3. Perhaps splitting off a validation data set and improve my very simple training algorithm with that with methods like early stopping, etc.
-
-It could be that my data isn't diverse enough to accurately divide into the 25 labels. Perhaps I can even try implementing into the cost function that if the guess is within +/- 2-3 ranks of the true rank, it also counts? 
+I have come to realize that KNN models are notoriously bad with high dimension problems. I chose to use 8 features (listed above), and have nearly have a million observations, so this problem is not high dimension. My initial thoughts on why it's behaving poorly:
+1. Some of the features aren't great. For instance, average assists doesn't look very helpful. When looking at the plots above, any feature that flattens out pretty quickly is probably not something I should use. So I can reduce my dimensionality.
+2. My dataset is complicated enough that the model needs more customization than the basic sklearn application. Perhaps I should split off a validation dataset, and create a PyTorch model. Maybe I should switch to an SVM or a deep network and train that.
+3. My dataset could be a poor one. There's a chance there isn't enough variability between a rank and the 4-6 ranks surrounding it. Perhaps I can even try implementing looser cost function that accepts guesses is within +/-2-3 ranks of the true rank? 
+4. Perhaps splitting off a validation data set and improve my very simple training algorithm with that with methods like early stopping, etc.
 
 
 
 
 ## E: Predicting an account's rank
-This will have 2 steps:
-1a. If someone does not have a rank, then send them to step 2.
-1b. If someone does have a rank, use a t-test/ANOVA to confirm they are in the correct rank. If they are not, send them to step 2.
-
-2. Run them through the classification model to determine their rank.
+This will have ~3 steps:
+1. If someone does not have a rank, then send them to step 3.
+2. If someone does have a rank, use a t-test/ANOVA to confirm they are in the correct rank. If they are not, send them to step 3.
+3. Run them through the classification model to determine their rank.
 
 If I cannot find a good classification model, I was thinking I could resort to using a MANOVA test to determine their rank. I may still do that.
    
