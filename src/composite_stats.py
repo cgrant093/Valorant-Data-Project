@@ -8,6 +8,7 @@ composite_stats is a set of methods that:
 
 
 import numpy as np
+import pandas as pd
 
 
 def headshot_percentage(headshots, bodyshots, legshots):
@@ -15,7 +16,7 @@ def headshot_percentage(headshots, bodyshots, legshots):
 
     total_shots = headshots + bodyshots + legshots
     
-    ## If total shots = 0, then return 0, so we don't blow up the computer
+    # If total shots = 0, then return 0, so we don't blow up the computer
     if total_shots == 0:
         return 0
     
@@ -25,9 +26,10 @@ def headshot_percentage(headshots, bodyshots, legshots):
 def KD_calc(kills, deaths):
     '''Calculates kill/death ratio for a given map'''
     
-    ## If deaths = 0, then return 0, so we don't blow up the computer
+    # If deaths = 0, just return (kills/1) because that's how they do it
+    # so the game doesn't show your KD as 'undefined'
     if deaths == 0:
-        return 0
+        return (kills)
     
     return (kills/deaths)
 
@@ -57,7 +59,7 @@ def team_position(character):
         'Yoru' : 'Duelist'
     }
     
-    ## If character not properly collected, return None
+    # If character not properly collected, return None
     if not character in position_dict:
         return np.nan
     

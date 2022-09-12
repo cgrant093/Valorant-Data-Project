@@ -76,7 +76,7 @@ def plot_avg_value(stat, group, y, plot_path):
 
     fig = plt.figure().add_subplot()
     
-    plt.errorbar(x, y['mean'][stat], y['sem'][stat], fmt='go-', 
+    plt.errorbar(x, y['mean'][stat], y['std'][stat], fmt='go-', 
                  ecolor='g', lw=2, capsize=2, capthick=2)
 
     plt.xticks(rank_order(), rotation=label_rot, size=label_size)
@@ -103,7 +103,7 @@ def plot_avg_value_per_position(stat, group, y, plot_path):
     fig = plt.figure().add_subplot()
     
     for position in y:
-        plt.errorbar(x, y[position]['mean'][stat], y[position]['sem'][stat], 
+        plt.errorbar(x, y[position]['mean'][stat], y[position]['std'][stat], 
                      fmt=f'{colors[i]}o-', ecolor=colors[i], 
                      lw=2, capsize=2, capthick=2)
         i += 1
