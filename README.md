@@ -57,7 +57,7 @@ I plotted each in-game statistics per rank to find the signficant features. The 
 The features I have currently chose to match mechanical ability and game sense to a player's rank are:
 
 ![KD rank](./src/plots/KD_rank_black.png#gh-dark-mode-only) ![HS perc rank](./src/plots/HS_perc_rank_black.png#gh-dark-mode-only)
-![KD rank](./src/plots/KD_rank_black.png#gh-light-mode-only) ![HS perc rank](./src/plots/HS_perc_rank_white.png#gh-light-mode-only)
+![KD rank](./src/plots/KD_rank_white.png#gh-light-mode-only) ![HS perc rank](./src/plots/HS_perc_rank_white.png#gh-light-mode-only)
 ![avg Ability Usage_rank](./src/plots/avg_ability_usage_rank_black.png#gh-dark-mode-only) ![Avg Dam Rec_rank](./src/plots/avg_dmg_rec_rank_black.png#gh-dark-mode-only)
 ![avg Ability Usage_rank](./src/plots/avg_ability_usage_rank_white.png#gh-light-mode-only) ![Avg Dam Rec_rank](./src/plots/avg_dmg_rec_rank_white.png#gh-light-mode-only)
 ![Avg econ spent](./src/plots/avg_spent_rank_black.png#gh-dark-mode-only) ![Avg econ loadout](./src/plots/avg_loadout_rank_black.png#gh-dark-mode-only)
