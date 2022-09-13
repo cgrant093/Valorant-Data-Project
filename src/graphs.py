@@ -1,4 +1,5 @@
 import pandas as pd
+import seaborn as sns
 import matplotlib.pyplot as plt
 
 def rank_order():   
@@ -40,27 +41,19 @@ def change_plot_color(fig, color):
     
     fig.yaxis.label.set_color(color)
     fig.xaxis.label.set_color(color)
-    fig.title.set_color(color)
 
     return fig
-
-
-def plot_rank_distribution(df, data_path, plot_path, keyword):
-    df['count'] = 1
     
-    groupby_ranked = df.groupby(['Rank']).count()['count']
-    groupby_ranked = groupby_ranked.reindex(rank_order())
-    data = zip(rank_order(), groupby_ranked)
 
-    groupby_ranked_df = pd.DataFrame(data, columns=['Rank', 'count'])
-    groupby_ranked_df.to_csv(f'{data_path}{keyword}_dist.csv', index=False)
+def plot_rank_distribution(df, plot_path, keyword):
+    fig = plt.figure(figsize=(9, 3.5)).add_subplot()
     
-    fig = plt.figure().add_subplot()
+    sns.histplot(data=df, x='Rank', hue='Rank', legend=None,
+                 palette=sns.color_palette(color_order))
     
-    plt.bar(rank_order(), groupby_ranked, color=color_order)
     plt.xticks(rank_order(), rotation=label_rot, size=label_size)
-    plt.ylabel('Total players in a rank')
-    plt.xlabel('Rank')
+    plt.ylabel('Total players in a rank', size=label_size)
+    plt.xlabel('Rank', size=label_size)
     plt.tight_layout()
     
     fig = change_plot_color(fig, 'white') 
@@ -72,18 +65,16 @@ def plot_rank_distribution(df, data_path, plot_path, keyword):
     plt.show()
 
 
-def plot_avg_value(stat, y, plot_path, y_label):
-    x = rank_order()
-
-    fig = plt.figure().add_subplot()
+def plot_avg_value(stat, df, plot_path, y_label):
+    fig = plt.figure(figsize=(5, 3.5)).add_subplot()
     
-    plt.errorbar(x, y['mean'][stat], y['std'][stat], fmt='co-', 
-                 ecolor='c', lw=2, capsize=2, capthick=2)
-
+    sns.lineplot(data=df, x="Rank", y=stat,
+                 marker='o', markersize=6, dashes=False,
+                 err_style='bars', errorbar=(('sd', 1)) )
+    
     plt.xticks(rank_order(), rotation=label_rot, size=label_size)
-    plt.ylabel(y_label)
-    plt.xlabel('Rank')
-    plt.title(y_label + " per rank")
+    plt.ylabel(y_label, size=label_size)
+    plt.xlabel('Rank', size=label_size)
     plt.tight_layout() 
     
     fig = change_plot_color(fig, 'white') 
@@ -95,26 +86,17 @@ def plot_avg_value(stat, y, plot_path, y_label):
     plt.show()
 
 
-def plot_avg_value_per_position(stat, y, plot_path, y_label):
-    x = rank_order()
-    
-    colors = ['g', 'b', 'r', 'm']
-    position_list = ['Duelist', 'Initiator', 'Sentinel', 'Controller']
-    i = 0
-    
-    fig = plt.figure().add_subplot()
-    
-    for position in y:
-        plt.errorbar(x, y[position]['mean'][stat], y[position]['std'][stat], 
-                     fmt=f'{colors[i]}o-', ecolor=colors[i], 
-                     lw=2, capsize=2, capthick=2)
-        i += 1
+def plot_avg_value_per_position(stat, df, plot_path, y_label):
+    fig = plt.figure(figsize=(5, 3.5)).add_subplot()
+
+    sns.color_palette('pastel')
+    sns.lineplot(data=df, x="Rank", y=stat, hue='Position', 
+                 style='Position', markers=True, markersize=6, 
+                 dashes=False, err_style=None)
         
-    plt.legend(position_list, loc=2)
     plt.xticks(rank_order(), rotation=label_rot, size=label_size)
-    plt.ylabel(y_label)
-    plt.xlabel('Rank')
-    plt.title(y_label + " per rank")
+    plt.ylabel(y_label, size=label_size)
+    plt.xlabel('Rank', size=label_size)
     plt.tight_layout()
     
     fig = change_plot_color(fig, 'white') 
