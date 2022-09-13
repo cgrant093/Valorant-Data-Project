@@ -40,6 +40,7 @@ def change_plot_color(fig, color):
     
     fig.yaxis.label.set_color(color)
     fig.xaxis.label.set_color(color)
+    fig.title.set_color(color)
 
     return fig
 
@@ -71,17 +72,18 @@ def plot_rank_distribution(df, data_path, plot_path, keyword):
     plt.show()
 
 
-def plot_avg_value(stat, group, y, plot_path):
+def plot_avg_value(stat, y, plot_path, y_label):
     x = rank_order()
 
     fig = plt.figure().add_subplot()
     
-    plt.errorbar(x, y['mean'][stat], y['std'][stat], fmt='go-', 
-                 ecolor='g', lw=2, capsize=2, capthick=2)
+    plt.errorbar(x, y['mean'][stat], y['std'][stat], fmt='co-', 
+                 ecolor='c', lw=2, capsize=2, capthick=2)
 
     plt.xticks(rank_order(), rotation=label_rot, size=label_size)
-    plt.ylabel(f'Avg {stat} per {group}')
+    plt.ylabel(y_label)
     plt.xlabel('Rank')
+    plt.title(y_label + " per rank")
     plt.tight_layout() 
     
     fig = change_plot_color(fig, 'white') 
@@ -93,10 +95,10 @@ def plot_avg_value(stat, group, y, plot_path):
     plt.show()
 
 
-def plot_avg_value_per_position(stat, group, y, plot_path):
+def plot_avg_value_per_position(stat, y, plot_path, y_label):
     x = rank_order()
     
-    colors = ['g', 'b', 'r', 'm', 'k']
+    colors = ['g', 'b', 'r', 'm']
     position_list = ['Duelist', 'Initiator', 'Sentinel', 'Controller']
     i = 0
     
@@ -110,8 +112,9 @@ def plot_avg_value_per_position(stat, group, y, plot_path):
         
     plt.legend(position_list, loc=2)
     plt.xticks(rank_order(), rotation=label_rot, size=label_size)
-    plt.ylabel(f'Avg {stat} per {group}')
-    plt.xlabel(group)
+    plt.ylabel(y_label)
+    plt.xlabel('Rank')
+    plt.title(y_label + " per rank")
     plt.tight_layout()
     
     fig = change_plot_color(fig, 'white') 
