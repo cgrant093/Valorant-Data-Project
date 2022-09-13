@@ -44,8 +44,8 @@ Aside from removing missing data, another aspect to cleaning the data needed to 
 
 After cleaning the data, I was left with this distribution of account ranks:
 
-![my rank distribution](./plots/clean_dist_black.png#gh-dark-mode-only)
-![my rank distribution](./plots/clean_dist_white.png#gh-light-mode-only)
+![my rank distribution](./src/plots/clean_dist_black.png#gh-dark-mode-only)
+![my rank distribution](./src/plots/clean_dist_white.png#gh-light-mode-only)
 
 Which is very similar to the bar chart found on [tracker.gg](https://tracker.gg/valorant/leaderboards/ranked/all/default?page=1). Although, I have not written a statistical test to check how similar the two distributions are, and will potentially implement this in the future.
 
@@ -56,14 +56,14 @@ I plotted each in-game statistics per rank to find the signficant features. The 
 
 The features I have currently chose to match mechanical ability and game sense to a player's rank are:
 
-![KD rank](./plots/KD_rank_black.png#gh-dark-mode-only) ![HS perc rank](./plots/HS_perc_rank_black.png#gh-dark-mode-only)
-![KD rank](./plots/KD_rank_white.png#gh-light-mode-only) ![HS perc rank](./plots/HS_perc_rank_white.png#gh-light-mode-only)
-![avg Ability Usage_rank](./plots/avg_ability_usage_rank_black.png#gh-dark-mode-only) ![Avg Dam Rec_rank](./plots/avg_dmg_rec_rank_black.png#gh-dark-mode-only)
-![avg Ability Usage_rank](./plots/avg_ability_usage_rank_white.png#gh-light-mode-only) ![Avg Dam Rec_rank](./plots/avg_dmg_rec_rank_white.png#gh-light-mode-only)
-![Avg econ spent](./plots/avg_spent_rank_black.png#gh-dark-mode-only) ![Avg econ loadout](./plots/avg_loadout_rank_black.png#gh-dark-mode-only)
-![Avg econ spent](./plots/avg_spent_rank_white.png#gh-light-mode-only) ![Avg econ loadout](./plots/avg_loadout_rank_white.png#gh-light-mode-only)
-![Account level](./plots/level_rank_black.png#gh-dark-mode-only) ![Avg assists](./plots/avg_assists_rank_black.png#gh-dark-mode-only)
-![Account level](./plots/level_rank_white.png#gh-light-mode-only) ![Avg assists](./plots/avg_assists_rank_white.png#gh-light-mode-only)
+![KD rank](./src/plots/KD_rank_black.png#gh-dark-mode-only) ![HS perc rank](./src/plots/HS_perc_rank_black.png#gh-dark-mode-only)
+![KD rank](./src/plots/KD_rank_black.png#gh-light-mode-only) ![HS perc rank](./src/plots/HS_perc_rank_white.png#gh-light-mode-only)
+![avg Ability Usage_rank](./src/plots/avg_ability_usage_rank_black.png#gh-dark-mode-only) ![Avg Dam Rec_rank](./src/plots/avg_dmg_rec_rank_black.png#gh-dark-mode-only)
+![avg Ability Usage_rank](./src/plots/avg_ability_usage_rank_white.png#gh-light-mode-only) ![Avg Dam Rec_rank](./src/plots/avg_dmg_rec_rank_white.png#gh-light-mode-only)
+![Avg econ spent](./src/plots/avg_spent_rank_black.png#gh-dark-mode-only) ![Avg econ loadout](./src/plots/avg_loadout_rank_black.png#gh-dark-mode-only)
+![Avg econ spent](./src/plots/avg_spent_rank_white.png#gh-light-mode-only) ![Avg econ loadout](./src/plots/avg_loadout_rank_white.png#gh-light-mode-only)
+![Account level](./src/plots/level_rank_black.png#gh-dark-mode-only) ![Avg assists](./src/plots/avg_assists_rank_black.png#gh-dark-mode-only)
+![Account level](./src/plots/level_rank_white.png#gh-light-mode-only) ![Avg assists](./src/plots/avg_assists_rank_white.png#gh-light-mode-only)
 
 I found that some other features I originally chose had nearly the same plot as the KD plot, and it makes sense that this is the case because they are highly related to KD. I decided to not include them to try to have non-repeated normalized features in the model. 
 
@@ -71,8 +71,8 @@ Also, in terms of rank, a player can also have a particular 'position' on the te
 
 I also wanted to look at the statistics based on rank and position. However, I found that other than the Average Assists plot, the plots for each stat based position (and rank) largely follow the same curve as the one only based on rank, and different characters a player chooses seems to have a negligable outcome on their rank. For instance,
 
-![KD rank pos](./plots/KD_rank_pos_black.png#gh-dark-mode-only) ![HS perc rank pos](./plots/HS_perc_rank_pos_black.png#gh-dark-mode-only)
-![KD_rank pos](./plots/KD_rank_pos_white.png#gh-light-mode-only) ![HS perc rank pos](./plots/HS_perc_rank_pos_white.png#gh-light-mode-only)
+![KD rank pos](./src/plots/KD_rank_pos_black.png#gh-dark-mode-only) ![HS perc rank pos](./src/plots/HS_perc_rank_pos_black.png#gh-dark-mode-only)
+![KD_rank pos](./src/plots/KD_rank_pos_white.png#gh-light-mode-only) ![HS perc rank pos](./src/plots/HS_perc_rank_pos_white.png#gh-light-mode-only)
 
 We can see for some features, it's closely the same plot, and for others, like headshot percentage is the exact same plot.
 
@@ -83,13 +83,13 @@ Preprocessed data:
 2. Encoded the labels
 3. Split data into 80% training and 20% testing
 
-My first attempt at a classification model was the built in KNN from sklearn. I found that it has a very poor accuracy. I tried various neighbor values ranging from 3 to 1001, and the best accuracy found was 11%.
+My first attempt at a classification model was the built in KNN from sklearn. I found that it has a very poor accuracy. I tried various neighbor values ranging from 3 to 23, and the best accuracy found was 11%. Afterwards, I tried both the decision tree and random forest classifiers, with various max_depths, and found the accuracy to not breach 12%. I could not get the sklearn SVC to train in a reasonable amount of time.
 
-To improve the poor performance, a few ideas I had were:
-1. Some of the features aren't great and/or have a logrithmic plot vs rank. For instance, average assists doesn't look very helpful due to its unique shape. When looking at the plots above, any logrithmic feature can't differentiate 2/3s of the player base and is not something I should use. So I either need to eliminate some current features, or add some others I didn't originally think about.
-2. My model needs to change. Maybe a Random Forest or another classifier is a better choice? Maybe I need to implement a deep learning framework with PyTorch with a more customizable cost functions? Maybe a statistical test is a better way to go?
-3. My dataset could be a poor one. There's a chance there isn't enough variability between a rank and the +/-2- ranks surrounding it. Perhaps I can even try implementing more loose cost function?
-4. Perhaps I need to split off a validation data set to improve my very simple training algorithm with that with methods like early stopping, etc.
+As can be seen in the above graphs, the spread for each 'rank' or 'class' is large, and there is much overlap between ranks. This could potentially be resolved with any combination of the following:
+1. more data
+2. more data cleaning/wrangling
+3. choosing different features
+4. reducing the number of classes
 
 
 ## E: Predicting an account's rank
