@@ -30,23 +30,27 @@ color_order = [
 label_rot = 75
 label_size = 8
 
-def change_plot_color(fig, color):
-    fig.spines['bottom'].set_color(color)
-    fig.spines['top'].set_color(color) 
-    fig.spines['right'].set_color(color)
-    fig.spines['left'].set_color(color)
+def change_plot_color(fig, ax, color, background):
+    ax.spines['bottom'].set_color(color)
+    ax.spines['top'].set_color(color) 
+    ax.spines['right'].set_color(color)
+    ax.spines['left'].set_color(color)
     
-    fig.tick_params(axis='x', colors=color)
-    fig.tick_params(axis='y', colors=color)
+    ax.tick_params(axis='x', colors=color)
+    ax.tick_params(axis='y', colors=color)
     
-    fig.yaxis.label.set_color(color)
-    fig.xaxis.label.set_color(color)
+    ax.yaxis.label.set_color(color)
+    ax.xaxis.label.set_color(color)
+    
+    fig.patch.set_facecolor(background)
+    ax.axes.set_facecolor(background)
 
-    return fig
+    return fig, ax
     
 
 def plot_rank_distribution(df, plot_path, keyword):
-    fig = plt.figure(figsize=(9, 3.5)).add_subplot()
+    fig = plt.figure(figsize=(9, 3.5))
+    ax = fig.add_subplot()
     
     sns.histplot(data=df, x='Rank', hue='Rank', legend=None,
                  palette=sns.color_palette(color_order))
@@ -56,17 +60,18 @@ def plot_rank_distribution(df, plot_path, keyword):
     plt.xlabel('Rank', size=label_size)
     plt.tight_layout()
     
-    fig = change_plot_color(fig, 'white') 
+    fig, ax = change_plot_color(fig, ax, 'white', 'black') 
     plt.savefig(f'{plot_path}{keyword}_dist_white.png')
 
-    fig = change_plot_color(fig, 'black')
+    fig, ax = change_plot_color(fig, ax, 'black', 'white')
     plt.savefig(f'{plot_path}{keyword}_dist_black.png')
     
     plt.show()
 
 
 def plot_avg_value(stat, df, plot_path, y_label):
-    fig = plt.figure(figsize=(5, 3.5)).add_subplot()
+    fig = plt.figure(figsize=(5, 3.5))
+    ax = fig.add_subplot()
     
     sns.lineplot(data=df, x="Rank", y=stat,
                  marker='o', markersize=6, dashes=False,
@@ -77,18 +82,19 @@ def plot_avg_value(stat, df, plot_path, y_label):
     plt.xlabel('Rank', size=label_size)
     plt.tight_layout() 
     
-    fig = change_plot_color(fig, 'white') 
+    fig, ax = change_plot_color(fig, ax, 'white', 'black') 
     plt.savefig(f'{plot_path}{stat}_rank_white.png')
 
-    fig = change_plot_color(fig, 'black')
+    fig, ax = change_plot_color(fig, ax, 'black', 'white')
     plt.savefig(f'{plot_path}{stat}_rank_black.png')
     
     plt.show()
 
 
 def plot_avg_value_per_position(stat, df, plot_path, y_label):
-    fig = plt.figure(figsize=(5, 3.5)).add_subplot()
-
+    fig = plt.figure(figsize=(5, 3.5))
+    ax = fig.add_subplot()
+    
     sns.color_palette('pastel')
     sns.lineplot(data=df, x="Rank", y=stat, hue='Position', 
                  style='Position', markers=True, markersize=6, 
@@ -99,10 +105,10 @@ def plot_avg_value_per_position(stat, df, plot_path, y_label):
     plt.xlabel('Rank', size=label_size)
     plt.tight_layout()
     
-    fig = change_plot_color(fig, 'white') 
+    fig, ax = change_plot_color(fig, ax, 'white', 'black') 
     plt.savefig(f'{plot_path}{stat}_rank_pos_white.png')
 
-    fig = change_plot_color(fig, 'black')
+    fig, ax = change_plot_color(fig, ax, 'black', 'white')
     plt.savefig(f'{plot_path}{stat}_rank_pos_black.png')
     
     plt.show()
