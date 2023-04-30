@@ -1,9 +1,5 @@
 '''
-composite_stats is a set of methods that:
-    1. Extract data from a single a match info
-    2. Calculate some values off of that data
-    3. Check for error in url request.
-        If the info wasn't collect, to correct for that
+
 '''
 import pytest
 import numpy as np
