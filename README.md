@@ -1,3 +1,23 @@
+# Update 20240705: 
+It's been 2 years since I worked on this project, and there have been some changes in some of my dependencies.
+The API I was using to collect the data has changed made a new rule: "No big analytic projects".
+To comply with the API creators wishes, I cannot collect anymore data.
+
+I can try to create and train a better model on the data I do have. However, with more experience I realized that my the previous way I did things were naive.
+I did not create a database, and instead saved only the pieces of data I felt were useful, which meant I threw away a lot of information from the API requests.
+This means that the model will most likely not get any better (unless I'm lucky).
+
+### Therefore, this project will (probably) not make any more progress.
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
 ### **Players are prematurely leaving Valorant due to the other players abusing the match-making algorithm, which is losing Riot money!**
 
 Woah... woah... woah... let's step back for a moment. What's Valorant? What's Riot? What's going on?
